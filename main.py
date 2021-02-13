@@ -39,7 +39,7 @@ def count_people(video_path):
         _, contours, _ = cv2.findContours(dilated_frame, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
 
         for contour in contours:
-            if cv2.contourArea(contour) < 50:
+            if cv2.contourArea(contour) < 150:
                 continue
             x, y, width, height = cv2.boundingRect(contour)
 
@@ -53,8 +53,15 @@ def count_people(video_path):
             center_point = (center_point_x_int, center_point_y_int)
             cv2.circle(resized_frame, center_point, 1, (0, 0, 255), 2)
 
-            plt.imshow(dilated_frame)
-            plt.show()
+            cv2.line(resized_frame, (0, 250), (500, 250), (0, 0, 255), 2)
+
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     break
+        cv2.imshow("Peoples", resized_frame)
+        cv2.waitKey(0)
+    print(counted_people)
+    video.release()
+    cv2.destroyAllWindows()
 
     return counted_people
 
@@ -82,5 +89,5 @@ def crossed_threshold(x, y):
 
 
 if __name__ == '__main__':
-    count_people("Videos/video1.mp4")
+    count_people("Videos/video2.mp4")
     print('nothing for now')
