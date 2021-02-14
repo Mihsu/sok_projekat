@@ -1,6 +1,4 @@
 import cv2
-import imutils
-import numpy
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_absolute_error
 
@@ -21,6 +19,7 @@ def count_people(video_path):
         flag, video_frame = video.read()
         if not flag:
             break
+
         resized_frame = define_region_of_interest(video_frame, x_start_plateau, y_start_plateau, plateau_width,
                                                   plateau_height)
 
@@ -54,13 +53,15 @@ def count_people(video_path):
             center_point = (center_point_x_int, center_point_y_int)
             cv2.circle(resized_frame, center_point, 1, (0, 0, 255), 2)
 
-            cv2.line(resized_frame, (0, plateau_height // 3 ), (plateau_width, plateau_height // 3), (0, 0, 255), 2)
+            cv2.line(resized_frame, (0, plateau_height // 3), (plateau_width, plateau_height // 3), (0, 0, 255), 2)
             if crossed_threshold(center_point_y, plateau_height / 3):
                 counted_people += 1
+            plt.imshow(cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB))
+        plt.show()
+        # print(counted_people)
 
-            # plt.imshow(cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB))
-            # plt.show()
     print(counted_people)
+
     return counted_people
 
 
@@ -85,13 +86,13 @@ def define_region_of_interest(frame, x, y, width, height):
 # koordinatni sistem ide od gore levo
 def crossed_threshold(y, y_center_frame):
     res = y - y_center_frame
-    if abs(res) <= 1:
+    if abs(res) <= 0.9:
         return True
     return False
 
 
 def load_results():
-    results = [count_people("Videos/video1.mp4"), count_people("Videos/video2.mp4"),
+    results = [count_people("Videos/video2.mp4"), count_people("Videos/video2.mp4"),
                count_people("Videos/video3.mp4"), count_people("Videos/video4.mp4"),
                count_people("Videos/video5.mp4"), count_people("Videos/video6.mp4"),
                count_people("Videos/video7.mp4"), count_people("Videos/video8.mp4"),
