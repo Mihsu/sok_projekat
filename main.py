@@ -39,12 +39,13 @@ def count_people(video_path):
         _, contours, _ = cv2.findContours(dilated_frame, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         for contour in contours:
-            if cv2.contourArea(contour) < 120:
+            contour_area = cv2.contourArea(contour)
+            if 120 > contour_area:
                 continue
+
             x, y, width, height = cv2.boundingRect(contour)
 
             cv2.rectangle(resized_frame, (x, y), (x + width, y + height), (255, 0, 0), 2)
-
             center_point_x = x + (width / 2)
             center_point_y = y + (height / 2)
             center_point_x_int = x + (width // 2)
@@ -56,18 +57,12 @@ def count_people(video_path):
             cv2.line(resized_frame, (0, plateau_height // 3), (plateau_width, plateau_height // 3), (0, 0, 255), 2)
             if crossed_threshold(center_point_y, plateau_height / 3):
                 counted_people += 1
-            plt.imshow(cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB))
-        plt.show()
-        # print(counted_people)
+        #     plt.imshow(cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB))
+        # plt.show()
 
     print(counted_people)
 
     return counted_people
-
-
-def return_mae(given, final):
-    mae = mean_absolute_error(given, final)
-    return mae
 
 
 def do_gaussian_blur_frame(frame):
@@ -83,7 +78,6 @@ def define_region_of_interest(frame, x, y, width, height):
     return roi
 
 
-# koordinatni sistem ide od gore levo
 def crossed_threshold(y, y_center_frame):
     res = y - y_center_frame
     if abs(res) <= 0.9:
@@ -92,7 +86,7 @@ def crossed_threshold(y, y_center_frame):
 
 
 def load_results():
-    results = [count_people("Videos/video2.mp4"), count_people("Videos/video2.mp4"),
+    results = [count_people("Videos/video1.mp4"), count_people("Videos/video2.mp4"),
                count_people("Videos/video3.mp4"), count_people("Videos/video4.mp4"),
                count_people("Videos/video5.mp4"), count_people("Videos/video6.mp4"),
                count_people("Videos/video7.mp4"), count_people("Videos/video8.mp4"),
@@ -100,9 +94,20 @@ def load_results():
     return results
 
 
+def return_mae(given, final):
+    mae = mean_absolute_error(given, final)
+    return mae
+
+
 if __name__ == '__main__':
     given_results = [4, 24, 17, 23, 17, 27, 29, 22, 10, 23]
     final_results = load_results()
+    print("----------------------------------")
+    print("Given results :")
+    print(given_results)
 
-    print("Mae:")
+    print("Final results:")
+    print(final_results)
+    print("----------------------------------")
+    print("MAE:")
     print(str(return_mae(given_results, final_results)))
